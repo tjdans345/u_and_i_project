@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart'; // 안드로이드, 구글 관련
+import 'package:flutter/material.dart'; // ios 관련
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -8,7 +9,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 // 그래 위젯을 그릴 때 부분 부분을 나누어서 생각을 하면 좀 수월하겠다
-
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
@@ -31,46 +31,100 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 // _는 private 역할
-class _TopPart extends StatelessWidget {
+// 코드를 깔끔하게 하기위해 위젯을 분리함
+class _TopPart extends StatefulWidget {
   const _TopPart({Key? key}) : super(key: key);
 
   @override
+  State<_TopPart> createState() => _TopPartState();
+}
+
+class _TopPartState extends State<_TopPart> {
+  DateTime selectedDate = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day
+  );
+
+  @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+
     return Expanded(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           const Text(
             'U&I',
             style: TextStyle(
                 color: Colors.white, fontFamily: 'parisienne', fontSize: 80.0),
           ),
-          const Text(
-            '우리 처음 만난 날',
-            style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'himelody',
-                fontWeight: FontWeight.bold,
-                fontSize: 30.0),
-          ),
-          const Text(
-            '2021.12.27',
-            style: TextStyle(
-                color: Colors.white,
-                fontFamily: 'himelody',
-                fontWeight: FontWeight.bold,
-                fontSize: 30.0),
+          Column(
+            children:  [
+              const Text(
+                '우리 처음 만난 날',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'himelody',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30.0),
+              ),
+              Text(
+                '${selectedDate.year}.${selectedDate.month}.${selectedDate.day}',
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'himelody',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30.0),
+              ),
+            ],
           ),
           IconButton(
             iconSize: 60.0,
-            onPressed: () {},
+            onPressed: () {
+              // dialog
+              showCupertinoDialog(
+                barrierDismissible: true,
+                context: context,
+                builder: (BuildContext context) {
+                  return Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      color: Colors.white,
+                      height: 300.0,
+                      child: CupertinoDatePicker(
+                          mode: CupertinoDatePickerMode.date,
+                          initialDateTime: selectedDate, // 초기 데이터 타임
+                          maximumDate: DateTime( // 최대 날짜를 정해줌
+                            now.year,
+                            now.month,
+                            now.day
+                          ),
+                          onDateTimeChanged: (DateTime date) {
+                            setState(() {
+                                selectedDate = date;
+                            });
+                          },
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
             icon: const Icon(
               Icons.favorite,
               color: Colors.redAccent,
             ),
           ),
-          const Text(
-            'D+1',
-            style: TextStyle(
+          Text(
+            'D+${
+            DateTime(
+              now.year,
+              now.month,
+              now.day
+            ).difference(selectedDate).inDays + 1
+            }',
+            style: const TextStyle(
                 color: Colors.white,
                 fontFamily: 'himelody',
                 fontWeight: FontWeight.w600,
@@ -90,3 +144,4 @@ class _BottomPart extends StatelessWidget {
     return Expanded(child: Image.asset('asset/img/middle_image.png'));
   }
 }
+
