@@ -10,6 +10,9 @@ class HomeScreen extends StatefulWidget {
 
 // 그래 위젯을 그릴 때 부분 부분을 나누어서 생각을 하면 좀 수월하겠다
 class _HomeScreenState extends State<HomeScreen> {
+  DateTime selectedDate =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,8 +22,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Container(
           width: MediaQuery.of(context).size.width, // 가운데로 오게끔 하는 코드
           child: Column(
-            children: const [
-              _TopPart(),
+            children: [
+              _TopPart(
+                selectedDate: selectedDate,
+                onPressed: onHeartPressed,
+              ),
               _BottomPart(),
             ],
           ),
@@ -28,23 +34,51 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  onHeartPressed() {
+    final DateTime now = DateTime.now();
+
+      // dialog
+      showCupertinoDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (BuildContext context) {
+          return Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              color: Colors.white,
+              height: 300.0,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: selectedDate, // 초기 데이터 타임
+                maximumDate: DateTime( // 최대 날짜를 정해줌
+                    now.year,
+                    now.month,
+                    now.day
+                ),
+                onDateTimeChanged: (DateTime date) {
+                  setState(() {
+                    selectedDate = date;
+                  });
+                },
+              ),
+            ),
+          );
+        },
+      );
+  }
+
 }
 
 // _는 private 역할
 // 코드를 깔끔하게 하기위해 위젯을 분리함
-class _TopPart extends StatefulWidget {
-  const _TopPart({Key? key}) : super(key: key);
 
-  @override
-  State<_TopPart> createState() => _TopPartState();
-}
+class _TopPart extends StatelessWidget {
+  final DateTime selectedDate;
+  final VoidCallback onPressed;
 
-class _TopPartState extends State<_TopPart> {
-  DateTime selectedDate = DateTime(
-      DateTime.now().year,
-      DateTime.now().month,
-      DateTime.now().day
-  );
+  _TopPart({required this.selectedDate, required this.onPressed, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +94,7 @@ class _TopPartState extends State<_TopPart> {
                 color: Colors.white, fontFamily: 'parisienne', fontSize: 80.0),
           ),
           Column(
-            children:  [
+            children: [
               const Text(
                 '우리 처음 만난 날',
                 style: TextStyle(
@@ -81,49 +115,14 @@ class _TopPartState extends State<_TopPart> {
           ),
           IconButton(
             iconSize: 60.0,
-            onPressed: () {
-              // dialog
-              showCupertinoDialog(
-                barrierDismissible: true,
-                context: context,
-                builder: (BuildContext context) {
-                  return Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      color: Colors.white,
-                      height: 300.0,
-                      child: CupertinoDatePicker(
-                          mode: CupertinoDatePickerMode.date,
-                          initialDateTime: selectedDate, // 초기 데이터 타임
-                          maximumDate: DateTime( // 최대 날짜를 정해줌
-                            now.year,
-                            now.month,
-                            now.day
-                          ),
-                          onDateTimeChanged: (DateTime date) {
-                            setState(() {
-                                selectedDate = date;
-                            });
-                          },
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
+            onPressed: onPressed,
             icon: const Icon(
               Icons.favorite,
               color: Colors.redAccent,
             ),
           ),
           Text(
-            'D+${
-            DateTime(
-              now.year,
-              now.month,
-              now.day
-            ).difference(selectedDate).inDays + 1
-            }',
+            'D+${DateTime(now.year, now.month, now.day).difference(selectedDate).inDays + 1}',
             style: const TextStyle(
                 color: Colors.white,
                 fontFamily: 'himelody',
@@ -144,4 +143,3 @@ class _BottomPart extends StatelessWidget {
     return Expanded(child: Image.asset('asset/img/middle_image.png'));
   }
 }
-
