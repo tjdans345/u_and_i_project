@@ -38,41 +38,39 @@ class _HomeScreenState extends State<HomeScreen> {
   onHeartPressed() {
     final DateTime now = DateTime.now();
 
-      // dialog
-      showCupertinoDialog(
-        barrierDismissible: true,
-        context: context,
-        builder: (BuildContext context) {
-          return Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              color: Colors.white,
-              height: 300.0,
-              child: CupertinoDatePicker(
-                mode: CupertinoDatePickerMode.date,
-                initialDateTime: selectedDate, // 초기 데이터 타임
-                maximumDate: DateTime( // 최대 날짜를 정해줌
-                    now.year,
-                    now.month,
-                    now.day
-                ),
-                onDateTimeChanged: (DateTime date) {
-                  setState(() {
-                    selectedDate = date;
-                  });
-                },
-              ),
+    // dialog
+    showCupertinoDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (BuildContext context) {
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            color: Colors.white,
+            height: 300.0,
+            child: CupertinoDatePicker(
+              mode: CupertinoDatePickerMode.date,
+              initialDateTime: selectedDate, // 초기 데이터 타임
+              maximumDate: DateTime(
+                  // 최대 날짜를 정해줌
+                  now.year,
+                  now.month,
+                  now.day),
+              onDateTimeChanged: (DateTime date) {
+                setState(() {
+                  selectedDate = date;
+                });
+              },
             ),
-          );
-        },
-      );
+          ),
+        );
+      },
+    );
   }
-
 }
 
 // _는 private 역할
 // 코드를 깔끔하게 하기위해 위젯을 분리함
-
 class _TopPart extends StatelessWidget {
   final DateTime selectedDate;
   final VoidCallback onPressed;
@@ -82,34 +80,27 @@ class _TopPart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); // .of 는 인헤리티드 위젯임
+    final textTheme = theme.textTheme;
     final now = DateTime.now();
 
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const Text(
+           Text(
             'U&I',
-            style: TextStyle(
-                color: Colors.white, fontFamily: 'parisienne', fontSize: 80.0),
+            style: textTheme.headline1,
           ),
           Column(
             children: [
-              const Text(
+               Text(
                 '우리 처음 만난 날',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'himelody',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30.0),
+                style: textTheme.bodyText1,
               ),
               Text(
                 '${selectedDate.year}.${selectedDate.month}.${selectedDate.day}',
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'himelody',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30.0),
+                style: textTheme.bodyText2,
               ),
             ],
           ),
@@ -123,11 +114,7 @@ class _TopPart extends StatelessWidget {
           ),
           Text(
             'D+${DateTime(now.year, now.month, now.day).difference(selectedDate).inDays + 1}',
-            style: const TextStyle(
-                color: Colors.white,
-                fontFamily: 'himelody',
-                fontWeight: FontWeight.w600,
-                fontSize: 60.0),
+            style: textTheme.headline2,
           ),
         ],
       ),
